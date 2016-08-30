@@ -9,9 +9,19 @@ This system is cross platform capable. It will run under Windows as well
 as Unix like environments without a code rewrite. This allows you to
 write your code once and run it where ever.
 
-<additional details go here>
+Using standard Perl5 tools, this software can installed as follows:
 
-Installation instructions can be found here:
+ # perl Build.PL
+ # ./Build
+ # ./Build test
+ # ./Build install
+ 
+You may have to install additonal dependences. If so, you can do this 
+preliminary step before the test phase.
+
+ # ./Build installdeps
+ 
+Additional installation instructions can be found here:
 
     http://scm.kesteb.us/trac/wiki/XasDocsXXXXInstallation
 
