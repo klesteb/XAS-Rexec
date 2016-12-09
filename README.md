@@ -1,5 +1,5 @@
-XAS xxxx - A xxxx for the XAS Environment
-===============================================
+XAS Rexec - A remote execution system for the XAS Environment
+=============================================================
 
 XAS is a set of modules, procedures and practices to help write
 consistent Perl5 code for an operations environment. For the most part,

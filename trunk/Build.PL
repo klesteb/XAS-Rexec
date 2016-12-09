@@ -2,34 +2,38 @@ use strict;
 use warnings FATAL => 'all';
 use Module::Build;
 
-my $requires = {
-    'XAS' => '0.08',
-};
-    
-my $sysconfig = ( -e '/etc/default' ) ? '/etc/default' : '/etc/sysconfig';
 my $install_path = {
+    db            => '/var/lib/xas',
     etc           => '/etc/xas',
+    web           => '/var/lib/xas/web',
     sbin          => '/usr/sbin',
     script        => '/usr/bin',
-    sysconfig     => $sysconfig,
+    sysconfig     => '/etc/sysconfig',
     'init.d'      => '/etc/init.d',
-    'profile.d'   => '/etc/profile.d',
-    'logrotate.d' => '/etc/logrotate.d'
+    'logrotate.d' => '/etc/logrotate.d',
 };
 
-if ($^O eq 'MSWin32') {
+my $requires = {
+     'XAS'          => '0.15',
+     'XAS::Service' => '0.01',
+};
 
-    my $path = defined($ENV{XAS_ROOT}) ? $ENV{XAS_ROOT} : 'C:\\xas';
+if ($^O eq 'MSwin32') {
 
-    my $install_path = {
-        etc           => $path . '\\etc',
-        sbin          => $path . '\\sbin',
-        script        => $path . '\\bin',
-        sysconfig     => $path . '\\etc\\sysconfig',
-        'init.d'      => $path . '\\etc\\init.d',
-        'profile.d'   => $path . '\\etc\\profile.d',
-        'logrotate.d' => $path . '\\etc\\logrotate.d'
-    };
+    my $path = defined($ENV{CTS_ROOT}) ? $ENV{CTS_ROOT} :
+               defined($ENV{xas_ROOT}) ? $ENV{xas_ROOT} : 'D:\\xas';
+
+   $install_path = {
+       db            => $path . '\\lib',
+       etc           => $path . '\\etc',
+       web           => $path . '\\var\\lib\\web',
+       sbin          => $path . '\\sbin',
+       script        => $path . '\\bin',
+       sysconfig     => $path . '\\etc\\sysconfig',
+       'init.d'      => $path . '\\etc\\init.d',
+       'logrotate.d' => $path . '\\etc\\logrotate.d',
+       'profile.d'   => $path . '\\etc\\profile.d',
+   };
 
 }
 
@@ -39,7 +43,6 @@ my $class = Module::Build->subclass(code => <<'EOC');
     use warnings;
 
     use IO::File;
-    use File::Copy;
     use File::Find;
     use File::Basename;
     use File::Spec::Functions qw( catfile catdir rel2abs );
@@ -64,9 +67,9 @@ my $class = Module::Build->subclass(code => <<'EOC');
     sub manify_sbin_pods {
         my $self    = shift;
 
-        my $files  = $self->_find_pods( 
+        my $files  = $self->_find_pods(
             $self->{properties}{sbindoc_dirs},
-            exclude => [ $self->file_qr('\.bat$') ] 
+            exclude => [ $self->file_qr('\.bat$') ]
         );
 
         return unless keys %$files;
@@ -79,12 +82,12 @@ my $class = Module::Build->subclass(code => <<'EOC');
         foreach my $file (keys %$files) {
 
             # Pod::Simple based parsers only support one document per instance.
-            # This is expected to change in a future version 
+            # This is expected to change in a future version
             # (Pod::Simple > 3.03).
 
             # binaries go in section 1p
 
-            my $parser  = Pod::Man->new( section => '1p' ); 
+            my $parser  = Pod::Man->new( section => '1p' );
             my $manpage = $self->man1page_name( $file ) . '.' .
                 $self->config( 'man1ext' );
 
@@ -96,78 +99,45 @@ my $class = Module::Build->subclass(code => <<'EOC');
 
             eval { $parser->parse_from_file( $file, $outfile ); 1 }
                  or $self->log_warn("Error creating '$outfile': $@\n");
-          
+
             $files->{$file} = $outfile;
 
         }
 
     }
 
-    # remove redhat stuff when installing to debian
+   # additional switch processing
 
-    sub ACTION_debian {
+    sub ACTION_post_install {
         my $self = shift;
 
-        # cleanup the init.d directory
+        # create wise owner/group
 
-        my $destdir = $self->destdir;
-        my @files = ('xas-spooler', 'xas-collector-alerts', 'xas-collector-logstash'); 
-        my @names = map { catfile($destdir, 'etc', 'init.d', $_ . '.rhel') } @files;
+        unless ($^O eq 'MSWin32') {
 
-        foreach my $file (@names) {
+            # use the standard unix filesystem layout
 
-            unlink $file if (-e $file);
+            system("mkdir /var/log/xas/rexec") unless ( -e '/var/log/xas/rexec');
 
-        }
+            # set ownership/permissions on the files/directories
 
-        @names = map { catfile($destdir, 'etc', 'init.d', $_ . '.debian') } @files;
+            system("chown -R xas.xas /var/log/xas/rexec");
+            system("chmod 0775 /var/log/xas/rexec");
+            system("chmod g+s /var/log/xas/rexec");
 
-        foreach my $file (@names) {
+        } else {
 
-            if ( -e $file) {
+            my $dir;
+            my $base = defined($ENV{XAS_ROOT})
+                    ? $ENV{XAS_ROOT}
+                    : ['D:', 'xas'];
 
-                my ($name, $path, $ext) = fileparse($file, qr/\.[^.]*/);
-                my $new = catfile($path, $name);
-
-                move($file, $new);
-
-            }
-
-        }
-
-    }
-
-    # remove debian stuff when installing to redhat
-
-    sub ACTION_redhat {
-        my $self = shift;
-
-        # cleanup the init.d directory
-
-        my $destdir = $self->destdir;
-        my @files = ('xas-spooler', 'xas-collector-alerts', 'xas-collector-logstash'); 
-        my @names = map { catfile($destdir, 'etc',  'init.d', $_ . '.debian') } @files;
-
-        foreach my $file (@names) {
-
-            unlink $file if (-e $file);
+            $dir = catdir($base, 'var', 'log', 'rexec');
+            system("mkdir $dir") unless ( -e $dir);
 
         }
 
-        @names = map { catfile($destdir, 'etc', 'init.d', $_ . '.rhel') } @files;
-
-        foreach my $file (@names) {
-
-            if ( -e $file) {
-
-                my ($name, $path, $ext) = fileparse($file, qr/\.[^.]*/);
-                my $new = catfile($path, $name);
-
-                move($file, $new);
-
-            }
-
-        }
+        return $self;
 
     }
 
@@ -179,6 +149,46 @@ my $class = Module::Build->subclass(code => <<'EOC');
         my $result;
         my $dir = catfile('blib', 'etc');
         my $files = $self->find_etc_files;
+
+        mkdir $dir unless (-e $dir);
+
+        while (my ($from, $to) = each %$files) {
+
+            $to = catfile('blib', $to);
+            $result = $self->copy_if_modified(from => $from, to => $to);
+
+        }
+
+        return $self;
+
+    }
+
+    sub process_db_files {
+        my $self = shift;
+
+        my $result;
+        my $dir = catfile('blib', 'lib');
+        my $files = $self->find_db_files;
+
+        mkdir $dir unless (-e $dir);
+
+        while (my ($from, $to) = each %$files) {
+
+            $to = catfile('blib', $to);
+            $result = $self->copy_if_modified(from => $from, to => $to);
+
+        }
+
+        return $self;
+
+    }
+
+    sub process_web_files {
+        my $self = shift;
+
+        my $result;
+        my $dir = catfile('blib', 'web');
+        my $files = $self->find_web_files;
 
         mkdir $dir unless (-e $dir);
 
@@ -206,12 +216,10 @@ my $class = Module::Build->subclass(code => <<'EOC');
 
             $to = catfile('blib', $to);
             $result = $self->copy_if_modified(from => $from, to => $to) or next;
-            $self->fix_shebang_line($result) unless $self->is_vmsish;
             $self->make_executable($result);
 
         }
 
-        $self->manify_sbin_pods();
         return $self;
 
     }
@@ -249,7 +257,8 @@ my $class = Module::Build->subclass(code => <<'EOC');
         while (my ($from, $to) = each %$files) {
 
             $to = catfile('blib', $to);
-            $result = $self->copy_if_modified(from => $from, to => $to);
+            $result = $self->copy_if_modified(from => $from, to => $to) or next;
+            $self->make_executable($result);
 
         }
 
@@ -298,7 +307,9 @@ my $class = Module::Build->subclass(code => <<'EOC');
 
     }
 
+    sub find_db_files { shift->find_all_files_no_scm('db'); }
     sub find_etc_files { shift->find_all_files_no_scm('etc'); }
+    sub find_web_files { shift->find_all_files_no_scm('web'); }
     sub find_sbin_files { shift->find_all_files_no_scm('sbin'); }
     sub find_initd_files { shift->find_all_files_no_scm('init.d'); }
     sub find_sysconf_files { shift->find_all_files_no_scm('sysconfig'); }
@@ -318,7 +329,7 @@ my $class = Module::Build->subclass(code => <<'EOC');
 
     }
 
-    # fix for when scm files are in the script directory
+    # fix for scm files in the script directory
 
     sub _files_in {
         my ($self, $dir) = @_;
@@ -339,10 +350,10 @@ my $class = Module::Build->subclass(code => <<'EOC');
 EOC
 
 my $builder = $class->new(
-    module_name         => 'XAS-XXXX',
+    module_name         => 'XAS::Rexec',
     license             => 'perl',
     dist_author         => q{Kevin L. Esteb <kevin@kesteb.us>},
-    dist_version_from   => 'lib/XAS/XXXX.pm',
+    dist_version_from   => 'lib/XAS/Rexec.pm',
     release_status      => 'stable',
     configure_requires => {
         'Module::Build' => 0,
@@ -350,20 +361,15 @@ my $builder = $class->new(
     build_requires => {
         'Test::More' => 0,
     },
-    meta_add => {
-        resources => {
-            homepage   => 'http://scm.kesteb.us/trac',
-            repository => 'http://scm.kesteb.us/git/XAS-XXXX',
-        },
-    },
-    add_to_cleanup     => [ 'XAS-XXXX-*' ],
+    add_to_cleanup     => [ 'XAS-Rexec-*' ],
     create_makefile_pl => 'traditional',
+    requires           => $requires,
     install_path       => $install_path,
-    requires           => $requires
 );
 
+$builder->add_build_element('db');
 $builder->add_build_element('etc');
-$builder->add_build_element('msg');
+$builder->add_build_element('web');
 $builder->add_build_element('sbin');
 $builder->add_build_element('initd');
 $builder->add_build_element('sysconf');
