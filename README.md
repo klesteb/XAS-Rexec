@@ -15,7 +15,9 @@ it in the usual Perl fashion or there are build scripts for creating
 Debian and RHEL install packages. Please see the included README for
 details.
 
-<additonal details go here>
+These modules impletement a REST based remote execution micro service.
+This service will run under Windows or a UNIX based environment. This
+service does not require SSH or WS-Manage to be functional.
 
 Extended documentation is available at: http://scm.kesteb.us/trac
 

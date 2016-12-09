@@ -1,4 +1,4 @@
-XAS xxxx is Copyright (c) 2012-2015 Kevin L. Esteb 
+XAS Rexec is Copyright (c) 2012-2016 Kevin L. Esteb 
 
 XAS is a set of modules, procedures and practices to help write
 consistent Perl5 code for a datacenter operations environment. For the most 
@@ -23,7 +23,7 @@ preliminary step before the test phase.
  
 Additional installation instructions can be found here:
 
-    http://scm.kesteb.us/trac/wiki/XasDocsXXXXInstallation
+    http://scm.kesteb.us/trac/wiki/XasDocsRexecInstallation
 
 Extended documentation is available at: http://scm.kesteb.us/trac
 
