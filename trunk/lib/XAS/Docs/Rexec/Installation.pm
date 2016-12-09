@@ -19,7 +19,7 @@ system is based on production level code.
 Since the code repository is git based, you can use the following commands:
 
     # mkdir XAS-Rexec
-    # cd XAS-RExec
+    # cd XAS-Rexec
     # git init
     # git pull http://scm.kesteb.us/git/XAS-Rexec master
 
@@ -83,7 +83,8 @@ B<WARNING>
 
 =head1 POST INSTALLATION
 
- <place holder>
+You may wish to change the configuration file. By default, the service listens
+on port 9507 on "localhost".
 
 =head1 SUPPORT AND DOCUMENTATION
 
