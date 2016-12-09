@@ -1,4 +1,4 @@
-package XAS::Docs::xxxx::Installation;
+package XAS::Docs::Rexec::Installation;
 
 our $VERSION = '0.01';
 
@@ -8,7 +8,7 @@ __END__
   
 =head1 NAME
 
-XAS::Docs::xxxx::Installation - how to install the XAS xxxx environment
+XAS::Docs::Rexec::Installation - how to install the XAS Rexec environment
 
 XAS is operations middleware for Perl. It provides standardized methods, 
 modules and philosophy for constructing large distributed applications. This 
@@ -18,16 +18,16 @@ system is based on production level code.
 
 Since the code repository is git based, you can use the following commands:
 
-    # mkdir XAS-xxxx
-    # cd XAS-xxxx
+    # mkdir XAS-Rexec
+    # cd XAS-RExec
     # git init
-    # git pull http://scm.kesteb.us/git/XAS-xxxx master
+    # git pull http://scm.kesteb.us/git/XAS-Rexec master
 
 Or you can download the code from CPAN in the following manner:
 
-    # cpan -g XAS-xxxx
-    # tar -xvf XAS-xxxx-0.01.tar.gz
-    # cd XAS-xxxx-0.01
+    # cpan -g XAS-Rexec
+    # tar -xvf XAS-Rexec-0.01.tar.gz
+    # cd XAS-Rexec-0.01
 
 It is suggested that you do not do an automated cpan based install, as it 
 will not set up the environment correctly. In either case the following 
@@ -47,7 +47,7 @@ Debian build environment, then you can do the following:
 
     # debian/rules build
     # debian/rules clean
-    # dpkg -i ../libxas-xxxx-perl_0.01-1_all.deb
+    # dpkg -i ../libxas-rexec-perl_0.01-1_all.deb
 
 If you are RPM based, a spec file has been included. If you have a
 rpm build environment, then you can do the following:
@@ -56,9 +56,9 @@ rpm build environment, then you can do the following:
     # ./Build
     # ./Build test
     # ./Build dist
-    # rpmbuild -ta XAS-xxxx-0.01.tar.gz
+    # rpmbuild -ta XAS-Rexec-0.01.tar.gz
     # cd ~/rpmbuild/RPMS/noarch
-    # yum --nogpgcheck localinstall perl-XAS-xxxx-0.01-1.noarch.rpm
+    # yum --nogpgcheck localinstall perl-XAS-Rexec-0.01-1.noarch.rpm
 
 Each of these installation methods will overlay the local file system and
 tries to follow Debian standards for file layout and package installation. 
@@ -90,7 +90,7 @@ B<WARNING>
 After installing, you can find documentation for this module with the
 perldoc command.
 
-    perldoc XAS-xxxx
+    perldoc XAS-Rexec
 
 Extended documentation is available here:
 
@@ -98,11 +98,11 @@ Extended documentation is available here:
 
 The latest and greatest is always available at:
 
-    http://scm.kesteb.us/git/XAS-xxxx
+    http://scm.kesteb.us/git/XAS-Rexec
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (C) 2012-2016 Kevin L. Esteb
+Copyright (c) 2012-2016 Kevin L. Esteb
 
 This is free software; you can redistribute it and/or modify it under
 the terms of the Artistic License 2.0. For details, see the full text

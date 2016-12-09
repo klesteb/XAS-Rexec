@@ -1,0 +1,93 @@
+[%#                                                    -%]
+[%# File: job.tt                                       -%]
+[%# Date: 01-Apr-2016                                  -%]
+[%# By  : Kevin Esteb                                  -%]
+[%#                                                    -%]
+[%# invoke INCLUDE display.tt data = <variable>        -%]
+[%#                                                    -%]
+[%# USE dumper(ident=>0, pad=>"<br>") -%]
+[%# dumper.dump(data)                  %]
+<table class="bordertable">
+  <caption>Job: [% data.jobid %]</caption>
+  <tbody>
+    <tr>
+      <td>Job Owner</td>
+      <td>[% data.username %]</td>
+    </tr>
+    <tr>
+      <td>Status</td>
+      <td>[% data.status %]</td>
+    </tr>
+    <tr>
+      <td>Queued</td>
+      <td>[% data.queued_time %]</td>
+    </tr>
+    <tr>
+      <td>Started</td>
+      <td>[% data.start_time %]</td>
+    </tr>
+    <tr>
+      <td>Completed</td>
+      <td>[% data.completion_time %]</td>
+    </tr>
+    <tr>
+      <td>Exit Code</td>
+      <td>[% data.exit_code %]</td>
+    </tr>
+    <tr>
+      <td>Command</td>
+      <td>[% data.command %]</td>
+    </tr>
+    <tr>
+      <td>User</td>
+      <td>[% data.user %]</td>
+    </tr>
+    <tr>
+      <td>Group</td>
+      <td>[% data.xgroup %]</td>
+    </tr>
+    <tr>
+      <td>Priority</td>
+      <td>[% data.priority %]</td>
+    </tr>
+    <tr>
+      <td>Directory</td>
+      <td>[% data.directory %]</td>
+    </tr>
+    <tr>
+      <td>Umask</td>
+      <td>[% data.umask %]</td>
+    </tr>
+    <tr>
+      <td>Environment</td>
+      <td>[% data.environment %]</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td>
+        [%~ IF data._links.start %]
+        <a href="[% data._links.start.href %]" class="ym-button ym-small startjob">[% data._links.start.title %]</a>
+        [%- END %]
+        [%~ IF data._links.stop %]
+        <a href="[% data._links.stop.href %]" class="ym-button ym-small stopjob">[% data._links.stop.title %]</a>
+        [%- END %]
+        [%~ IF data._links.pause %]
+        <a href="[% data._links.pause.href %]" class="ym-button ym-small pausejob">[% data._links.pause.title %]</a>
+        [%- END %]
+        [%~ IF data._links.resume %]
+        <a href="[% data._links.resume.href %]" class="ym-button ym-small resumejob">[% data._links.resume.title %]</a>
+        [%- END %]
+        [%~ IF data._links.kill %]
+        <a href="[% data._links.kill.href %]" class="ym-button ym-small killjob">[% data._links.kill.title %]</a>
+        [%- END %]
+        [%~ IF data._links.delete %]
+        <a href="[% data._links.delete.href %]" class="ym-button ym-small deletejob">[% data._links.delete.title %]</a>
+        [%- END %]
+        [%~ IF data._links.log %]
+        <a href="[% data._links.log.href %]" class="ym-button ym-small">[% data._links.log.title %]</a>
+        [%- END %]
+      </td>
+    </tr>
+  </tfoot>
+</table>

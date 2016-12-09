@@ -1,0 +1,16 @@
+/var/log/xas/xas-rexecd.log {
+    prerotate
+        service xas-rexecd stop
+    endscript
+    daily
+    nodateext
+    rotate 5
+    missingok
+    notifempty
+    sharedscripts
+    create 0664 xas xas
+    postrotate
+        service xas-rexecd stop
+    endscript
+}
+

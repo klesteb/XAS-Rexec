@@ -1,0 +1,73 @@
+[%#                                                 -%]
+[%#  File: jobs.tt                                  -%]
+[%#  Date: 01-Jun-2016                              -%]
+[%#  By  : Kevin Esteb                              -%]
+[%#                                                 -%]
+[%# Invoke with INCLUDE jobs.tt data = <variable>   -%]
+[%#                                                 -%]
+[%# USE dumper(ident=>0, pad=>"<br>") -%]
+[%# dumper.dump(data)                 -%]
+[%- SET count = 0 -%]
+[%- SET headings = ['Id', 'Owner', 'Status', 'Queued', 'Start', 'Completed', 'Actions'] %]
+<table class="bordertable">
+  <caption>Current Jobs</caption>
+  <thead>
+    <tr>
+    [%- FOREACH heading IN headings %]
+      <th>[% heading %]</th>
+    [%- END %]
+    </tr>
+  </thead>
+  <tbody>
+  [%- IF data.size > 1 -%]
+    [%- FOREACH job IN data -%]
+    [%- count = loop.count %]
+    <tr>
+      <td>[% job.jobid %]</td>
+      <td>[% job.username %]</td>
+      <td>[% job.status %]</td>
+      <td>[% job.queued_time %]</td>
+      <td>[% job.start_time %]</td>
+      <td>[% job.completion_time %]</td>
+      <td>
+        [%~ IF job._links.self %]
+        <a href="[% job._links.self.href %]" class="ym-button ym-xsmall">[% job._links.self.title %]</a>
+        [%- END %]
+        [%~ IF job._links.start %]
+        <a href="[% job._links.start.href %]" class="ym-button ym-xsmall startjob">[% job._links.start.title %]</a>
+        [%- END %]
+        [%~ IF job._links.stop %]
+        <a href="[% job._links.stop.href %]" class="ym-button ym-xsmall stopjob">[% job._links.stop.title %]</a>
+        [%- END %]
+        [%~ IF job._links.pause %]
+        <a href="[% job._links.pause.href %]" class="ym-button ym-xsmall pausejob">[% job._links.pause.title %]</a>
+        [%- END %]
+        [%~ IF job._links.resume %]
+        <a href="[% job._links.resume.href %]" class="ym-button ym-xsmall resumejob">[% job._links.resume.title %]</a>
+        [%- END %]
+        [%~ IF job._links.kill %]
+        <a href="[% job._links.kill.href %]" class="ym-button ym-xsmall killjob">[% job._links.kill.title %]</a>
+        [%- END %]
+        [%~ IF job._links.delete %]
+        <a href="[% job._links.delete.href %]" class="ym-button ym-xsmall deletejob">[% job._links.delete.title %]</a>
+        [%- END %]
+        [%~ IF job._links.log %]
+        <a href="[% job._links.log.href %]" class="ym-button ym-xsmall">[% job._links.log.title %]</a>
+        [%- END %]
+      </td>
+    </tr>
+    [%- END %]
+  [%- ELSE -%]
+    <tr><td>No Jobs</td></tr>
+  [%- END %]
+    </tbody>
+  <tfoot>
+  [%- IF count > 25 -%]
+    <tr>
+    [%- FOREACH heading IN table.headings -%]
+      <th>[% heading %]</th>
+    [%- END -%]
+    </tr>
+  [%- END %]
+  </tfoot>
+</table>

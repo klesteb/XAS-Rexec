@@ -1,0 +1,16 @@
+[%#                                                    -%]
+[%# File: log.tt                                       -%]
+[%# Date: 13-Jul-2016                                  -%]
+[%# By  : Kevin Esteb                                  -%]
+[%#                                                    -%]
+[%# invoke INCLUDE log.tt data = <variable>            -%]
+[%#                                                    -%]
+[%# USE dumper(ident=>0, pad=>"<br>") -%]
+[%# dumper.dump(data)                 -%]
+<h5>Log for job: [% data.jobid %]</h5>
+<samp>
+[%- FOREACH line IN data.lines %]
+[% line %]<br>
+[%- END %]
+</samp>
+<br>

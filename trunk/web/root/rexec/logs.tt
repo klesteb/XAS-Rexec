@@ -1,0 +1,44 @@
+[%#                                                 -%]
+[%#  File: logs.tt                                  -%]
+[%#  Date: 13-Jul-2016                              -%]
+[%#  By  : Kevin Esteb                              -%]
+[%#                                                 -%]
+[%# Invoke with INCLUDE logs.tt data = <variable>   -%]
+[%#                                                 -%]
+[% USE dumper(ident=>0, pad=>"<br>")  -%]
+[%# dumper.dump(data)                 -%]
+[%- SET count = 0 -%]
+[%- SET headings = ['Name', 'Last Modified', 'Size'] %]
+<table class="bordertable">
+  <caption>Current Logs</caption>
+  <thead>
+    <tr>
+    [%- FOREACH heading IN headings %]
+      <th>[% heading %]</th>
+    [%- END %]
+    </tr>
+  </thead>
+  <tbody>
+  [%- IF data.size > 1 -%]
+    [%- FOREACH log IN data -%]
+    [%- count = loop.count %]
+    <tr>
+      <td><a href="[% log._links.self.href %]">[% log._links.self.title %]</a></td>
+      <td>[% log.mtime %]</td>
+      <td>[% log.size %]</td>
+    </tr>
+    [%- END -%]
+  [%- ELSE -%]
+    <tr><td>No Logs</td></tr>
+  [%- END %]
+  </tbody>
+  <tfoot>
+  [%- IF count > 25 -%]
+    <tr>
+    [%- FOREACH heading IN table.headings -%]
+      <th>[% heading %]</th>
+    [%- END -%]
+    </tr>
+  [%- END %]
+  </tfoot>
+</table>
